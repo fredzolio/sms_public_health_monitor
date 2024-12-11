@@ -1,5 +1,5 @@
 import pandas as pd
-from sms_disease_alert import SmsDiseaseAlert
+from src import SmsDiseaseAlert
 
 def test_integration():
     crew = SmsDiseaseAlert()

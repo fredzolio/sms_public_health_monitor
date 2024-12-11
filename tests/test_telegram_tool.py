@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from src.sms_disease_alert.tools.telegram_tool import TelegramBotTool, TelegramBotInput
+from src.tools.telegram_tool import TelegramBotTool, TelegramBotInput
 
 @patch('tools.telegram_tool.requests.post')
 def test_telegram_bot_tool(mock_post):

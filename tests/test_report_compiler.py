@@ -1,5 +1,5 @@
 import pandas as pd
-from src.sms_disease_alert.tools.report_compiler_tool import ReportCompilerTool, ReportCompilerInput
+from src.tools.report_compiler_tool import ReportCompilerTool, ReportCompilerInput
 
 def test_report_compiler():
     tool = ReportCompilerTool()

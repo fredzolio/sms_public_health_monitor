@@ -1,5 +1,5 @@
 import pandas as pd
-from src.sms_disease_alert.tools.decision_maker_tool import DecisionMakerTool, DecisionMakerInput
+from src.tools.decision_maker_tool import DecisionMakerTool, DecisionMakerInput
 
 def test_decision_maker_no_outbreak():
     tool = DecisionMakerTool()

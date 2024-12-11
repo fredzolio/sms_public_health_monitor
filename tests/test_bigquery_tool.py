@@ -1,4 +1,4 @@
-from src.sms_disease_alert.tools.bigquery_tool import BigQueryTool, BigQueryToolInput
+from src.tools.bigquery_tool import BigQueryTool, BigQueryToolInput
 import pandas as pd
 
 def test_bigquery_tool():

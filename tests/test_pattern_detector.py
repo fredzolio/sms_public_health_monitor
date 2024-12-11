@@ -1,5 +1,5 @@
 import pandas as pd
-from src.sms_disease_alert.tools.pattern_detector_tool import PatternDetector, PatternDetectorInput
+from src.tools.pattern_detector_tool import PatternDetector, PatternDetectorInput
 
 def test_pattern_detector():
     tool = PatternDetector()
