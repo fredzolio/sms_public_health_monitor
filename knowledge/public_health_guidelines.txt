@@ -1,0 +1,6 @@
+# Diretrizes de Saúde Pública para Notificação de Surtos
+
+- Quando um surto de gastroenterite envolve mais de 20 casos em uma área com população densa, a Secretaria de Saúde deve ser notificada.
+- Para surtos de doenças respiratórias, a notificação é necessária se houver um aumento de 30% nos casos em relação ao mesmo período do ano anterior.
+- Para surtos envolvendo infecções de pele após alagamentos, a Secretaria deve ser notificada ao identificar mais de 10 casos em um período de uma semana.
+- Todas as notificações devem ser feitas no menor intervalo de tempo possível, para facilitar medidas de contenção.

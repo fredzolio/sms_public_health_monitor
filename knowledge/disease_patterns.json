@@ -1,0 +1,29 @@
+{
+  "gastroenteritis": {
+    "symptoms": ["nausea", "vomiting", "diarrhea"],
+    "spread": "fecal-oral route",
+    "common_areas": ["schools", "restaurants", "events"],
+    "season": "year-round",
+    "incubation_period": "1-3 days",
+    "prevention": ["wash hands frequently", "drink treated water"],
+    "lethality_rate": "Low"
+  },
+  "influenza": {
+    "symptoms": ["fever", "cough", "sore throat", "fatigue"],
+    "spread": "airborne",
+    "common_areas": ["workplaces", "schools"],
+    "season": "winter",
+    "incubation_period": "1-4 days",
+    "prevention": ["get vaccinated", "avoid crowded places"],
+    "lethality_rate": "Low to Moderate"
+  },
+  "skin_infection": {
+    "symptoms": ["redness", "swelling", "itching"],
+    "spread": "contact with contaminated water or surfaces",
+    "common_areas": ["areas affected by flooding"],
+    "season": "rainy season",
+    "incubation_period": "2-5 days",
+    "prevention": ["avoid contaminated water", "keep skin clean and dry"],
+    "lethality_rate": "Low"
+  }
+}

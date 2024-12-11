@@ -1,0 +1,50 @@
+collect_data_task:
+  description: >
+    Coletar os dados do dia anterior dos atendimentos de saúde realizados nos estabelecimentos.
+    Assegure que todos os registros sejam coletados corretamente, mesmo que o volume de dados seja muito grande.
+  expected_output: >
+    Um DataFrame contendo todos os registros de atendimentos do dia anterior, incluindo os dados do estabelecimento e condições dos pacientes.
+  agent: data_collector
+
+monitor_surge_task:
+  description: >
+    Analisar os dados coletados para detectar surtos, condições mais prevalentes e mudanças significativas nos padrões de saúde pública.
+    Utilize técnicas avançadas de análise de tendências e detecção de anomalias para fornecer insights detalhados.
+  expected_output: >
+    Uma lista com:
+    - Surtos detectados.
+    - Tendências emergentes e sazonais de condições reportadas.
+    - Localizações mais afetadas e recomendações para priorização de recursos.
+  agent: monitor
+
+decision_task:
+  description: >
+    Avaliar os surtos detectados e as tendências identificadas para determinar ações estratégicas.
+    Decida não apenas se notificações são necessárias, mas também sugira intervenções de saúde pública com base em padrões recorrentes.
+  expected_output: >
+    - Decisão sobre notificação de surtos.
+    - Recomendações estratégicas para melhorias na saúde pública, baseadas em dados analisados.
+  agent: decision_maker
+
+notify_task:
+  description: >
+    Enviar uma notificação aos cidadãos e/ou à Secretaria de Saúde caso um surto seja detectado e considerado uma ameaça.
+    As mensagens devem ser claras e concisas, com informações de prevenção e orientações.
+  expected_output: >
+    Uma mensagem enviada via Telegram aos cidadãos e às autoridades responsáveis.
+  agent: notifier
+
+generate_monthly_report_task:
+  description: >
+    Compilar os surtos e tendências detectadas ao longo do mês em um relatório detalhado.
+    O relatório deve incluir:
+    - Estatísticas de surtos.
+    - Condições mais relatadas.
+    - Áreas mais afetadas.
+    - Recomendações estratégicas e políticas de saúde pública baseadas nos dados.
+  expected_output: >
+    Um relatório mensal completo, em formato Markdown, com:
+    - Surtos detectados e ações tomadas.
+    - Tendências e padrões sazonais.
+    - Condições predominantes e recomendações para a saúde pública.
+  agent: report_generator
