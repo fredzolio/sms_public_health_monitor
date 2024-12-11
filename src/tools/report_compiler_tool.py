@@ -40,30 +40,44 @@ class ReportCompilerTool(BaseTool):
 
             # Verificar colunas necessárias
             required_columns = ['condicoes', 'cid_count', 'estabelecimento_id', 'latitude', 'longitude']
-            for col in required_columns:
-                if col not in compiled_data.columns:
-                    logging.error(f"Coluna '{col}' não encontrada no DataFrame compilado.")
-                    return f"Erro: Coluna '{col}' não encontrada nos dados fornecidos."
+            missing_columns = [col for col in required_columns if col not in compiled_data.columns]
+            if missing_columns:
+                logging.error(f"As seguintes colunas estão ausentes: {missing_columns}")
+                return f"Erro: Colunas ausentes nos dados fornecidos: {missing_columns}"
 
             # Agrupar os dados por condições (CIDs) e contar os eventos
-            report_by_cid = compiled_data.groupby('condicoes')['cid_count'].sum()
+            report_by_cid = compiled_data.groupby('condicoes')['cid_count'].sum().sort_values(ascending=False)
 
             # Localizações mais afetadas
             report_by_location = compiled_data.groupby(['latitude', 'longitude'])['cid_count'].sum().reset_index()
+            report_by_location = report_by_location.sort_values(by='cid_count', ascending=False)
+
+            # Condições mais frequentes por localização
+            conditions_by_location = compiled_data.groupby(['latitude', 'longitude', 'condicoes'])['cid_count'].sum().reset_index()
+            conditions_by_location = conditions_by_location.sort_values(by='cid_count', ascending=False)
 
             # Criar a mensagem do relatório
-            report_message = "Relatório Mensal de Surtos Detectados\n"
-            report_message += "\nSeção 1: Resumo por Condição (CID):\n"
+            report_message = "## Relatório Mensal de Surtos Detectados\n"
+            report_message += "\n### Seção 1: Resumo por Condição (CID):\n"
             for condicao, count in report_by_cid.items():
                 report_message += f"- {condicao}: {count} casos detectados\n"
 
-            report_message += "\nSeção 2: Localizações Mais Afetadas:\n"
+            report_message += "\n### Seção 2: Localizações Mais Afetadas:\n"
             for _, row in report_by_location.iterrows():
                 report_message += f"- Localização ({row['latitude']}, {row['longitude']}): {row['cid_count']} casos\n"
 
+            report_message += "\n### Seção 3: Condições Mais Frequentes por Localização:\n"
+            for _, row in conditions_by_location.iterrows():
+                report_message += (
+                    f"- Localização ({row['latitude']}, {row['longitude']}), Condição {row['condicoes']}: {row['cid_count']} casos\n"
+                )
+
             # Informações adicionais do relatório
+            total_cases = compiled_data['cid_count'].sum()
             total_outbreaks = len(compiled_data[compiled_data['outbreak'] == -1])
-            report_message += f"\nSeção 3: Total de surtos detectados durante o mês: {total_outbreaks}\n"
+            report_message += f"\n### Seção 4: Estatísticas Gerais:\n"
+            report_message += f"- Total de casos analisados: {total_cases}\n"
+            report_message += f"- Total de surtos detectados: {total_outbreaks}\n"
 
             logging.info("Relatório mensal gerado com sucesso.")
             return report_message

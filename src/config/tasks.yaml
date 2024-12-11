@@ -1,10 +1,12 @@
 collect_data_task:
   description: >
-    Coletar os dados do dia anterior dos atendimentos de saúde realizados nos estabelecimentos.
-    Assegure que todos os registros sejam coletados corretamente, mesmo que o volume de dados seja muito grande.
+    Gerenciar os dados no BigQuery e manter uma janela deslizante de 30 dias em um arquivo CSV local.
   expected_output: >
-    Um DataFrame contendo todos os registros de atendimentos do dia anterior, incluindo os dados do estabelecimento e condições dos pacientes.
+    Um CSV atualizado contendo os dados dos últimos 30 dias.
   agent: data_collector
+  args:
+    csv_path: 'data/health_data.csv'
+    update: true
 
 monitor_surge_task:
   description: >
@@ -16,6 +18,8 @@ monitor_surge_task:
     - Tendências emergentes e sazonais de condições reportadas.
     - Localizações mais afetadas e recomendações para priorização de recursos.
   agent: monitor
+  args:
+    csv_path: 'data/health_data.csv'
 
 decision_task:
   description: >
@@ -25,6 +29,8 @@ decision_task:
     - Decisão sobre notificação de surtos.
     - Recomendações estratégicas para melhorias na saúde pública, baseadas em dados analisados.
   agent: decision_maker
+  args:
+    csv_path: 'data/health_data.csv'
 
 notify_task:
   description: >
@@ -48,3 +54,5 @@ generate_monthly_report_task:
     - Tendências e padrões sazonais.
     - Condições predominantes e recomendações para a saúde pública.
   agent: report_generator
+  args:
+    csv_path: 'data/health_data.csv'

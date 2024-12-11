@@ -25,31 +25,74 @@ class DecisionMakerTool(BaseTool):
         Evaluate detected outbreaks and decide whether to notify health authorities or citizens.
 
         Returns:
-            dict: A dictionary containing the decision and reasons.
+            dict: A dictionary containing the decision, reasons, and strategic recommendations.
         """
         # Verificar se o DataFrame fornecido está vazio
         if outbreaks.empty:
             logging.info("Nenhum surto detectado. Nenhuma ação necessária.")
-            return {"notify": False, "reason": "Nenhum surto detectado."}
+            return {
+                "notify": False,
+                "reason": "Nenhum surto detectado.",
+                "recommendations": []
+            }
 
         try:
             # Lógica de decisão
             num_outbreaks = len(outbreaks)
             logging.info(f"{num_outbreaks} surtos detectados.")
 
+            # Identificar as localizações mais afetadas
+            location_summary = (
+                outbreaks.groupby(["latitude", "longitude"])
+                .size()
+                .reset_index(name="count")
+                .sort_values(by="count", ascending=False)
+            )
+            top_locations = location_summary.head(5).to_dict(orient="records")
+
+            # Identificar condições mais frequentes
+            condition_summary = (
+                outbreaks.groupby("condicao_id")
+                .size()
+                .reset_index(name="count")
+                .sort_values(by="count", ascending=False)
+            )
+            top_conditions = condition_summary.head(5).to_dict(orient="records")
+
+            recommendations = [
+                "Monitorar as localizações mais afetadas.",
+                "Realizar campanhas de prevenção para as condições mais frequentes.",
+                "Priorizar recursos para áreas com maior número de surtos."
+            ]
+
             if num_outbreaks > threshold:
                 logging.info(f"Decisão tomada: Notificar a Secretaria de Saúde.")
-                # Gerar uma mensagem explicativa
                 reason = (
                     f"Notificação necessária: {num_outbreaks} surtos detectados, acima do limite de {threshold}."
                 )
-                return {"notify": True, "reason": reason}
+                return {
+                    "notify": True,
+                    "reason": reason,
+                    "top_locations": top_locations,
+                    "top_conditions": top_conditions,
+                    "recommendations": recommendations,
+                }
 
             # Caso esteja abaixo do limite
             logging.info(f"{num_outbreaks} surtos detectados, mas abaixo do limite de {threshold}.")
-            return {"notify": False, "reason": f"{num_outbreaks} surtos detectados, abaixo do limite."}
+            return {
+                "notify": False,
+                "reason": f"{num_outbreaks} surtos detectados, abaixo do limite.",
+                "top_locations": top_locations,
+                "top_conditions": top_conditions,
+                "recommendations": recommendations,
+            }
 
         except Exception as e:
             # Capturar qualquer exceção inesperada e logar o erro
             logging.error(f"Erro ao processar a decisão: {str(e)}")
-            return {"notify": False, "reason": f"Erro ao processar a decisão: {str(e)}"}
+            return {
+                "notify": False,
+                "reason": f"Erro ao processar a decisão: {str(e)}",
+                "recommendations": []
+            }

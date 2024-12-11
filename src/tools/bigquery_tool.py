@@ -3,6 +3,7 @@ from typing import Type
 from pydantic import BaseModel, Field
 import google.cloud.bigquery as bigquery
 import pandas as pd
+import os
 from datetime import date, timedelta
 import logging
 
@@ -11,27 +12,28 @@ logging.basicConfig(level=logging.INFO)
 
 class BigQueryToolInput(BaseModel):
     """Input schema for BigQueryTool."""
-    query_type: str = Field(..., description="Type of query to run: 'custom' or 'daily_collect'")
-    custom_query: str = Field(default=None, description="Custom SQL query to run on BigQuery.")
+    csv_path: str = Field(..., description="Path to the local CSV file.")
+    update: bool = Field(default=False, description="Whether to update the CSV incrementally.")
 
 class BigQueryTool(BaseTool):
     name: str = "BigQueryTool"
     description: str = (
-        "This tool allows the agent to query data from the Google BigQuery data lake. "
-        "It can collect data for a specific period or execute custom queries."
+        "This tool manages data collection from BigQuery and updates a local CSV file to maintain a 30-day rolling window."
     )
     args_schema: Type[BaseModel] = BigQueryToolInput
 
-    def _run(self, query_type: str, custom_query: str = None) -> pd.DataFrame:
+    def _run(self, csv_path: str, update: bool = False) -> pd.DataFrame:
         client = bigquery.Client()
+        
         try:
-            if query_type == 'daily_collect':
-                # Define o intervalo de datas dos últimos 30 dias
-                start_date = (date.today() - timedelta(days=30)).strftime('%Y-%m-%d')
-                end_date = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+            if update and os.path.exists(csv_path):
+                # Carregar o CSV existente
+                existing_data = pd.read_csv(csv_path)
+                last_date = pd.to_datetime(existing_data['entrada_data']).max().date()
+                new_date = last_date + timedelta(days=1)
 
-                # Base da consulta SQL
-                base_query = f"""
+                # Coletar dados incrementais do BigQuery
+                query = f"""
                 SELECT 
                     epi.id_episodio,
                     epi.subtipo,
@@ -55,45 +57,66 @@ class BigQueryTool(BaseTool):
                 ON 
                     epi.estabelecimento.id_cnes = loc.id_cnes
                 WHERE 
-                    epi.entrada_data BETWEEN '{start_date}' AND '{end_date}'
+                    entrada_data = '{new_date}'
                     AND epi.motivo_atendimento IS NOT NULL
                     AND epi.desfecho_atendimento IS NOT NULL
                     AND cond.id IS NOT NULL
                 """
+                new_data = client.query(query).result().to_dataframe()
 
-                # Configuração de paginação
-                batch_size = 100000
-                offset = 0
-                dfs = []
+                # Atualizar o CSV
+                if not new_data.empty:
+                    combined_data = pd.concat([existing_data, new_data], ignore_index=True)
+                    # Remover registros fora da janela de 30 dias
+                    cutoff_date = (date.today() - timedelta(days=30)).strftime('%Y-%m-%d')
+                    combined_data = combined_data[combined_data['entrada_data'] >= cutoff_date]
+                    combined_data.to_csv(csv_path, index=False)
+                    logging.info(f"CSV atualizado com dados do dia {new_date}.")
+                else:
+                    logging.info("Nenhum dado novo encontrado no BigQuery.")
 
-                # Paginação da consulta
-                while True:
-                    paginated_query = f"{base_query} LIMIT {batch_size} OFFSET {offset}"
-                    logging.info(f"Executando consulta com OFFSET {offset}...")
-                    job = client.query(paginated_query)
-                    batch_df = job.result().to_dataframe()
-                    
-                    if batch_df.empty:
-                        logging.info("Todas as páginas foram processadas.")
-                        break
-                    
-                    dfs.append(batch_df)
-                    offset += batch_size
-
-                # Combinar todos os DataFrames em um único
-                final_df = pd.concat(dfs, ignore_index=True)
-                logging.info(f"Coletados {len(final_df)} registros do BigQuery entre {start_date} e {end_date}.")
-                return final_df
-
-            elif query_type == 'custom' and custom_query is not None:
-                logging.info("Executando consulta customizada...")
-                job = client.query(custom_query)
-                df = job.result().to_dataframe()
-                logging.info("Consulta customizada executada com sucesso.")
-                return df
+                return combined_data
 
             else:
-                raise ValueError("Invalid query type or missing custom query.")
+                # Primeira importação (últimos 30 dias)
+                start_date = (date.today() - timedelta(days=30)).strftime('%Y-%m-%d')
+                end_date = (date.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+
+                query = f"""
+                SELECT 
+                    epi.id_episodio,
+                    epi.subtipo,
+                    epi.entrada_data,
+                    epi.motivo_atendimento,
+                    epi.desfecho_atendimento,
+                    cond.id AS condicao_id,
+                    cond.resumo AS condicao_resumo,
+                    med.nome AS medicamento_administrado,
+                    loc.id_cnes AS estabelecimento_id,
+                    loc.endereco_latitude AS latitude,
+                    loc.endereco_longitude AS longitude
+                FROM 
+                    `rj-sms.saude_historico_clinico.episodio_assistencial` AS epi
+                LEFT JOIN 
+                    UNNEST(epi.condicoes) AS cond
+                LEFT JOIN 
+                    UNNEST(epi.medicamentos_administrados) AS med
+                JOIN 
+                    `rj-sms.saude_dados_mestres.estabelecimento` AS loc
+                ON 
+                    epi.estabelecimento.id_cnes = loc.id_cnes
+                WHERE 
+                    entrada_data BETWEEN '{start_date}' AND '{end_date}'
+                    AND epi.motivo_atendimento IS NOT NULL
+                    AND epi.desfecho_atendimento IS NOT NULL
+                    AND cond.id IS NOT NULL
+                """
+                initial_data = client.query(query).result().to_dataframe()
+
+                # Salvar no CSV
+                initial_data.to_csv(csv_path, index=False)
+                logging.info(f"CSV criado com dados de {start_date} a {end_date}.")
+                return initial_data
 
         except Exception as e:
             logging.error(f"Erro ao executar a consulta no BigQuery: {str(e)}")
