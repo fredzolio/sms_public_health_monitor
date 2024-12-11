@@ -1,12 +1,12 @@
 # SMS Public Health Monitor
 
-This project is designed to monitor public health data through SMS notifications.
+This project is designed to monitor public health data through AI agents specialized in data analysis and alert generation.
 
 ## Features
 
 - Real-time health data monitoring
-- SMS notifications for alerts
-- User-friendly interface
+- Report generation and notifications for alerts
+- User-friendly interface with CrewAI agents and custom tools
 
 ## Installation
 
@@ -25,18 +25,8 @@ cd sms_public_health_monitor
 3. Install the dependencies:
 
 ```sh
-npm install
+uv sync
 ```
-
-## Usage
-
-1. Start the application:
-
-```sh
-npm start
-```
-
-2. Follow the on-screen instructions to set up your monitoring preferences.
 
 ## Contributing
 
