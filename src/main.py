@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import sys
 import warnings
@@ -17,8 +18,8 @@ def run():
         'csv_file': 'data/health_data.csv',
         'chat_id_cidadao': os.getenv('CHAT_FRED_ID'),
         'chat_id_gov': os.getenv('CHAT_FRED_ID'),
+        'current_date': datetime.now().strftime("%d/%m/%Y")
     }
-    
     SmsDiseaseAlert().crew().kickoff(inputs=inputs)
 
 def train():

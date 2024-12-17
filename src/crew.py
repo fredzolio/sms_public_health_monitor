@@ -123,16 +123,13 @@ class SmsDiseaseAlert:
             config=self.tasks_config['generate_monthly_report_task'],
             assigned_agent=self.report_generator,
             output_file='monthly_report.md',
-            context=[self.collect_data_task(), self.decision_task(), self.monitor_surge_task()]
+            context=[self.collect_data_task(), self.decision_task(), self.monitor_surge_task(), self.notify_task()]
         )
 
     # ====================================================
     # Definição da Crew
     # ====================================================
     
-    # knowledge_disease_patterns = JSONKnowledgeSource(
-    #     file_path='knowledge/disease_patterns.json',
-    # )
     # knowledge_notification_guidelines = TextFileKnowledgeSource(
     #     file_path='knowledge/notification_guidelines.txt',
     # )
