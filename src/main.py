@@ -1,3 +1,4 @@
+import os
 import sys
 import warnings
 
@@ -14,6 +15,8 @@ def run():
     """
     inputs = {
         'csv_file': 'data/health_data.csv',
+        'chat_id_cidadao': os.getenv('CHAT_FRED_ID'),
+        'chat_id_gov': os.getenv('CHAT_FRED_ID'),
     }
     
     SmsDiseaseAlert().crew().kickoff(inputs=inputs)

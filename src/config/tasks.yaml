@@ -27,25 +27,28 @@ decision_task:
     - Decisão se somente cidadãos ou também autoridades devem ser notificados.
     - Recomendações estratégicas para melhorias na saúde pública, baseadas em dados analisados, caso haja necessidade de notificação.
   agent: decision_maker
-# notify_task:
-#   description: >
-#     Enviar uma notificação aos cidadãos e/ou à Secretaria de Saúde caso um surto seja detectado e considerado uma ameaça.
-#     As mensagens devem ser claras e concisas, com informações de prevenção e orientações.
-#   expected_output: >
-#     Uma mensagem enviada via Telegram aos cidadãos e às autoridades responsáveis.
-#   agent: notifier
 
-# generate_monthly_report_task:
-#   description: >
-#     Compilar os surtos e tendências detectadas ao longo do mês em um relatório detalhado.
-#     O relatório deve incluir:
-#     - Estatísticas de surtos.
-#     - Condições mais relatadas.
-#     - Áreas mais afetadas.
-#     - Recomendações estratégicas e políticas de saúde pública baseadas nos dados.
-#   expected_output: >
-#     Um relatório mensal completo, em formato Markdown, com:
-#     - Surtos detectados e ações tomadas.
-#     - Tendências e padrões sazonais.
-#     - Condições predominantes e recomendações para a saúde pública.
-#   agent: report_generator
+notify_task:
+  description: >
+    Enviar uma notificação aos cidadãos e/ou à Secretaria de Saúde caso um surto seja detectado e considerado uma ameaça.
+    As mensagens devem ser claras, curtas e concisas, com informações de prevenção e orientações.
+    Você deve chamar a tool de notificação para enviar a mensagem para o cidadão se necessário. E caso seja necessário enviar para as autoriades, você deve chamar a tool de notificação para enviar a mensagem para as autoridades.
+  expected_output: >
+    Uma mensagem enviada via Telegram aos cidadãos através do chat_id {chat_id_cidadao} e às autoridades responsáveis através do {chat_id_gov}.
+  agent: notifier
+
+generate_monthly_report_task:
+  description: >
+    O relatório só deve ser criado, se e somente se, o agente notifier tiver feito alguma notificação.
+    Compilar os surtos e tendências detectadas ao longo do mês em um relatório detalhado.
+    O relatório deve incluir:
+    - Estatísticas de surtos.
+    - Condições mais relatadas.
+    - Áreas mais afetadas.
+    - Recomendações estratégicas e políticas de saúde pública baseadas nos dados.
+  expected_output: >
+    Um relatório mensal completo, em formato Markdown, com:
+    - Surtos detectados e ações tomadas.
+    - Tendências e padrões sazonais.
+    - Condições predominantes e recomendações para a saúde pública.
+  agent: report_generator

@@ -5,11 +5,8 @@ from crewai.knowledge.source.json_knowledge_source import JSONKnowledgeSource
 from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
 from crewai.knowledge.source.csv_knowledge_source import CSVKnowledgeSource
 from src.tools.csv_tool import CSVTool
-from crewai_tools import CSVSearchTool
 from tools.pattern_detector_tool import PatternDetector
-from tools.decision_maker_tool import DecisionMakerTool
 from tools.telegram_tool import TelegramBotTool
-from tools.report_compiler_tool import ReportCompilerTool
 import logging
 
 
@@ -54,29 +51,27 @@ class SmsDiseaseAlert:
         logging.info("Inicializando o agente 'decision_maker'.")
         return Agent(
             config=self.agents_config['decision_maker'],
-            tools=[DecisionMakerTool()],
             verbose=True
         )
 
-    # @agent
-    # def notifier(self) -> Agent:
-    #     """Agente responsável por enviar notificações através do Telegram."""
-    #     logging.info("Inicializando o agente 'notifier'.")
-    #     return Agent(
-    #         config=self.agents_config['notifier'],
-    #         tools=[TelegramBotTool()],
-    #         verbose=True
-    #     )
+    @agent
+    def notifier(self) -> Agent:
+        """Agente responsável por enviar notificações através do Telegram."""
+        logging.info("Inicializando o agente 'notifier'.")
+        return Agent(
+            config=self.agents_config['notifier'],
+            tools=[TelegramBotTool()],
+            verbose=True
+        )
 
-    # @agent
-    # def report_generator(self) -> Agent:
-    #     """Agente responsável pela geração de relatórios mensais."""
-    #     logging.info("Inicializando o agente 'report_generator'.")
-    #     return Agent(
-    #         config=self.agents_config['report_generator'],
-    #         tools=[ReportCompilerTool()],
-    #         verbose=True
-    #     )
+    @agent
+    def report_generator(self) -> Agent:
+        """Agente responsável pela geração de relatórios mensais."""
+        logging.info("Inicializando o agente 'report_generator'.")
+        return Agent(
+            config=self.agents_config['report_generator'],
+            verbose=True
+        )
 
     # ====================================================
     # Definição das Tarefas
@@ -110,26 +105,26 @@ class SmsDiseaseAlert:
             context=[self.monitor_surge_task()]
         )
 
-    # @task
-    # def notify_task(self) -> Task:
-    #     """Tarefa de notificação para alertar autoridades e cidadãos."""
-    #     logging.info("Criando a tarefa 'notify_task'.")
-    #     return Task(
-    #         config=self.tasks_config['notify_task'],
-    #         assigned_agent=self.notifier,
-    #         context=[self.collect_data_task(), self.decision_task(), self.monitor_surge_task()]
-    #     )
+    @task
+    def notify_task(self) -> Task:
+        """Tarefa de notificação para alertar autoridades e cidadãos."""
+        logging.info("Criando a tarefa 'notify_task'.")
+        return Task(
+            config=self.tasks_config['notify_task'],
+            assigned_agent=self.notifier,
+            context=[self.decision_task()]
+        )
 
-    # @task
-    # def generate_monthly_report_task(self) -> Task:
-    #     """Tarefa para gerar um relatório mensal dos surtos detectados."""
-    #     logging.info("Criando a tarefa 'generate_monthly_report_task'.")
-    #     return Task(
-    #         config=self.tasks_config['generate_monthly_report_task'],
-    #         assigned_agent=self.report_generator,
-    #         output_file='monthly_report.md',
-    #         context=[self.collect_data_task(), self.decision_task(), self.monitor_surge_task()]
-    #     )
+    @task
+    def generate_monthly_report_task(self) -> Task:
+        """Tarefa para gerar um relatório mensal dos surtos detectados."""
+        logging.info("Criando a tarefa 'generate_monthly_report_task'.")
+        return Task(
+            config=self.tasks_config['generate_monthly_report_task'],
+            assigned_agent=self.report_generator,
+            output_file='monthly_report.md',
+            context=[self.collect_data_task(), self.decision_task(), self.monitor_surge_task()]
+        )
 
     # ====================================================
     # Definição da Crew

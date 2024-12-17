@@ -3,7 +3,7 @@
 ## Resumo Geral
 
 - **Número Total de Surtos Detectados**: [N]
-- **Locais Mais Afetados**: [Nome dos Locais]
+- **Locais Mais Afetados**: [latitude, longitude]
 - **Doenças Mais Recorrentes**: [Lista de CIDs]
 
 ## Detalhamento dos Surtos
@@ -11,14 +11,14 @@
 ### Surto 1: [Nome da Doença]
 
 - **Número de Casos**: [Número]
-- **Localização**: [Cidade, Bairro]
+- **Localização**: [latitude, longitude]
 - **Período de Detecção**: [Data Inicial] - [Data Final]
 - **Ações Tomadas**: [Notificações enviadas, medidas de controle aplicadas]
 
 ### Surto 2: [Nome da Doença]
 
 - **Número de Casos**: [Número]
-- **Localização**: [Cidade, Bairro]
+- **Localização**: [latitude, longitude]
 - **Período de Detecção**: [Data Inicial] - [Data Final]
 - **Ações Tomadas**: [Notificações enviadas, medidas de controle aplicadas]
 
