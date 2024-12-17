@@ -11,6 +11,9 @@ class DecisionMakerInput(BaseModel):
     """Input schema for DecisionMakerTool."""
     outbreaks: pd.DataFrame = Field(..., description="DataFrame containing the detected outbreaks information.")
     threshold: int = Field(default=5, description="Threshold for the number of outbreaks to trigger a notification.")
+    
+    class Config:
+        arbitrary_types_allowed = True
 
 class DecisionMakerTool(BaseTool):
     name: str = "DecisionMakerTool"

@@ -13,8 +13,9 @@ def run():
     Executa a equipe.
     """
     inputs = {
-        'topic': 'Surto de Doenças'
+        'csv_file': 'data/health_data.csv',
     }
+    
     SmsDiseaseAlert().crew().kickoff(inputs=inputs)
 
 def train():

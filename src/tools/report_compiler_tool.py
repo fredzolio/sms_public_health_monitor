@@ -10,6 +10,9 @@ logging.basicConfig(level=logging.INFO)
 class ReportCompilerInput(BaseModel):
     """Input schema for ReportCompilerTool."""
     dataframes_list: List[pd.DataFrame] = Field(..., description="List of DataFrames to compile into a monthly report.")
+    
+    class Config:
+        arbitrary_types_allowed = True
 
 class ReportCompilerTool(BaseTool):
     name: str = "ReportCompilerTool"

@@ -1,5 +1,6 @@
+import os
 from crewai.tools import BaseTool
-from typing import Type
+from typing import ClassVar, Type
 from pydantic import BaseModel, Field
 import requests
 import logging
@@ -11,6 +12,9 @@ class TelegramBotInput(BaseModel):
     """Input schema for TelegramBotTool."""
     message: str = Field(..., description="Message to send via Telegram.")
     chat_id: str = Field(..., description="Chat ID to send the message to.")
+    
+    class Config:
+        arbitrary_types_allowed = True
 
 class TelegramBotTool(BaseTool):
     name: str = "TelegramBotTool"
@@ -19,7 +23,7 @@ class TelegramBotTool(BaseTool):
     )
     args_schema: Type[BaseModel] = TelegramBotInput
 
-    TELEGRAM_BOT_TOKEN = "your_telegram_bot_token_here"
+    TELEGRAM_BOT_TOKEN: ClassVar[str] = os.getenv("TELEGRAM_BOT_TOKEN")
 
     def _run(self, message: str, chat_id: str) -> str:
         # Verificar se o token do Telegram foi configurado corretamente
