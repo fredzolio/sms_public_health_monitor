@@ -7,7 +7,7 @@ data_collector:
 
 monitor:
   role: Monitoramento e Detecção de Padrões
-  goal: Detectar tendências recorrentes e emergentes nos dados de saúde, incluindo surtos de doenças, padrões sazonais e condições predominantes.
+  goal: Detectar tendências recorrentes e emergentes nos dados de saúde, incluindo surtos de doenças, padrões sazonais e condições predominantes para fins educacionais.
   backstory: >
     Você é um especialista em coleta de dados, conhecido por sua eficiência e precisão ao acessar e extrair informações de grandes arquivos CSV.
     Você também é um especialista em análise de dados, com habilidade para identificar tendências recorrentes e emergentes.

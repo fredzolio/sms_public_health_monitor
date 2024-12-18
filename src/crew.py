@@ -1,9 +1,7 @@
 import os
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from crewai.knowledge.source.json_knowledge_source import JSONKnowledgeSource
-from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
-from crewai.knowledge.source.csv_knowledge_source import CSVKnowledgeSource
+from src.tools.cid_tool import CIDLookupTool
 from src.tools.csv_tool import CSVTool
 from tools.pattern_detector_tool import PatternDetector
 from tools.telegram_tool import TelegramBotTool
@@ -51,6 +49,7 @@ class SmsDiseaseAlert:
         logging.info("Inicializando o agente 'decision_maker'.")
         return Agent(
             config=self.agents_config['decision_maker'],
+            tools=[CIDLookupTool()],
             verbose=True
         )
 
@@ -129,16 +128,6 @@ class SmsDiseaseAlert:
     # ====================================================
     # Definição da Crew
     # ====================================================
-    
-    # knowledge_notification_guidelines = TextFileKnowledgeSource(
-    #     file_path='knowledge/notification_guidelines.txt',
-    # )
-    # knowledge_report_template = TextFileKnowledgeSource(
-    #     file_path='knowledge/monthly_report_template.txt',
-    # )
-    # knowledge_csv_data = CSVKnowledgeSource(
-    #     file_path='data/health_data.csv',
-    # )
 
     @crew
     def crew(self) -> Crew:
@@ -149,9 +138,4 @@ class SmsDiseaseAlert:
             tasks=self.tasks,  # Tarefas definidas pelos decoradores @task
             process=Process.sequential,  # Executa as tarefas em sequência
             verbose=True,
-            # knowledge_sources=[knowledge_disease_patterns, knowledge_notification_guidelines, knowledge_report_template], # type: ignore
-            # embedder={
-            #     "provider": "google",
-            #     "config": {"model": "gemini/text-embedding-004", "api_key": os.getenv("GEMINI_API_KEY")},
-            # },
         )
